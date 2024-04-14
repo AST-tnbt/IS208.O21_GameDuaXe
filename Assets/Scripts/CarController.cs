@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CarController : MonoBehaviour
@@ -44,10 +46,11 @@ public class CarController : MonoBehaviour
       [Range(1, 10)]
       public int handbrakeDriftMultiplier = 5;
 
-      public bool canBoost = true;
-      public float boostDuration = 5f; // Thời gian boost
-      public float boostCooldown = 20f; // Thời gian cooldown boost
-      public float boostTimer = 0f; // Biến đếm ngược thời gian còn lại của boost khi đang được sử dụng.
+      public float nitrusValue;
+
+      public int originalAM;
+
+      public bool isBoosting;
 
       //Vector chứa trọng tâm của xe ( x = 0 , z = 0 , 0 <= y <= 1.5 )
       public Vector3 bodyMassCenter; 
@@ -63,18 +66,35 @@ public class CarController : MonoBehaviour
       public GameObject rearRightMesh;
       public WheelCollider rearRightCollider;
 
-    //CAR DATA
+    //SPEED TEXT (UI)
+      [Space(20)]
+      [Header("UI")]
+      [Space(10)]
+      public bool useUI = false;
+      public Text carSpeedText;
 
-      [HideInInspector]
-      public float carSpeed; //Lưu trữ tốc độ của xe
-      [HideInInspector]
-      public bool isDrifting; //Để biết xe có drift hay không
-      [HideInInspector]
-      public bool isTractionLocked; //Để biết bánh xe có bị khóa hay không.
-
-    //Info For Shop
+    //SOUNDS
+      [Space(20)]
+      [Header("SOUNDS")]
+      [Space(10)]
+      public bool useSounds = false;
+      public AudioSource carEngineSound;
+      public AudioSource tireScreechSound;
+      float initialCarEngineSoundPitch; // Used to store the initial pitch of the car engine sound.
+    
+    //INFO
+      [Space(20)]
+      [Header("INFO")]
       public int carPrice ;
       public string carName;
+      public bool hasFinished;
+
+    //CAR DATA
+
+      [HideInInspector] public float carSpeed; //Lưu trữ tốc độ của xe
+      [HideInInspector] public bool isDrifting; //Để biết xe có drift hay không
+      [HideInInspector] public bool isTractionLocked; //Để biết bánh xe có bị khóa hay không.
+      [HideInInspector] public float RPM;
 
     //PRIVATE VARIABLES
       Rigidbody carRigidbody;
@@ -130,6 +150,61 @@ public class CarController : MonoBehaviour
         RRwheelFriction.asymptoteSlip = rearRightCollider.sidewaysFriction.asymptoteSlip;
         RRwheelFriction.asymptoteValue = rearRightCollider.sidewaysFriction.asymptoteValue;
         RRwheelFriction.stiffness = rearRightCollider.sidewaysFriction.stiffness;
+
+
+      //init boost
+      originalAM = accelerationMultiplier;
+      nitrusValue = 2f;
+      isBoosting = false;
+
+      //init Sound
+      if(carEngineSound != null)
+      {
+        initialCarEngineSoundPitch = carEngineSound.pitch;
+      }
+
+      //Sound
+      if(useSounds)
+      {
+          InvokeRepeating("CarSounds", 0f, 0.1f);
+      }
+      else if(!useSounds)
+      {
+        if(carEngineSound != null)
+        {
+          carEngineSound.Stop();
+        }
+        if(tireScreechSound != null)
+        {
+          tireScreechSound.Stop();
+        }
+      }
+
+      string currentSceneName = SceneManager.GetActiveScene().name;
+      if (currentSceneName == "MainScene")
+      {
+        if (carEngineSound != null)
+        {
+            carEngineSound.Stop();
+        }
+        if (tireScreechSound != null)
+        {
+            tireScreechSound.Stop();
+        }
+      }
+      
+      //UI
+      if(useUI)
+      {
+          InvokeRepeating("CarSpeedUI", 0f, 0.1f);
+      }
+      else if(!useUI)
+      {
+        if(carSpeedText != null)
+        {
+          carSpeedText.text = "0";
+        }
+      }
     }
 
     void Update()
@@ -138,7 +213,9 @@ public class CarController : MonoBehaviour
       //CAR DATA
 
       //Tính toán vận tốc của xe
-      carSpeed = (2 * Mathf.PI * frontLeftCollider.radius * frontLeftCollider.rpm * 60) / 1000; // km/h
+      RPM = frontLeftCollider.rpm;
+      float ChuVi = 2 * Mathf.PI * frontLeftCollider.radius;
+      carSpeed = (ChuVi * RPM * 60) / 1000; // km/h
       // Lưu trữ vận tốc của xe theo trục x. Được sử dụng để biết xem xe có đang sang trái hay phải không.
       localVelocityX = transform.InverseTransformDirection(carRigidbody.velocity).x;
       // Lưu trữ vận tốc của xe theo trục z. Được sử dụng để biết xem xe đang đi tiến hay lùi.
@@ -147,7 +224,7 @@ public class CarController : MonoBehaviour
       //CAR PHYSICS
 
       //W (tăng ga), S (lùi),
-      //A (rẽ trái), D (rẽ phải), Space bar (phanh-drifts), Shift (tăng tốc)
+      //A (rẽ trái), D (rẽ phải), Space bar (phanh-drifts), F (tăng tốc)
 
         if(Input.GetKey(KeyCode.W))
 	      {
@@ -173,43 +250,28 @@ public class CarController : MonoBehaviour
           TurnRight();
         }
 
-        if(Input.GetKeyUp(KeyCode.Space))
+        if(Input.GetKey(KeyCode.Space))
 	      {
           CancelInvoke("DecelerateCar");
           deceleratingCar = false;
           Handbrake();
         }
-
-        if (Input.GetKeyDown(KeyCode.F) && canBoost)
+        
+        if(Input.GetKeyUp(KeyCode.Space))
         {
+          RecoverTraction();
+        }
+
+        if(Input.GetKeyUp(KeyCode.F))
+        {
+          RecoverNitrus();
+        }
+        if(Input.GetKey(KeyCode.F))
+        {
+            CancelInvoke("DecelerateCar");
+            deceleratingCar = false;
             Boost();
         }
-
-        if (boostTimer > 0f)
-        {
-            boostTimer -= Time.deltaTime;
-
-            // Nếu thời gian boost kết thúc, đặt lại trạng thái cho phép sử dụng boost sau cooldown
-            if (boostTimer <= 0f)
-            {
-                canBoost = false;
-                boostTimer = 0f;
-            }
-        }
-        else
-        {
-            // Nếu không trong trạng thái cooldown, cho phép sử dụng boost sau khi đã hết cooldown
-            if (!canBoost)
-            {
-                boostCooldown -= Time.deltaTime;
-                if (boostCooldown <= 0f)
-                {
-                    canBoost = true;
-                    boostCooldown = 20f; // Đặt lại thời gian cooldown
-                }
-            }
-        }
-
 
         if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)))
 	      {
@@ -228,6 +290,64 @@ public class CarController : MonoBehaviour
         }
 
       SynchroWheelMeshes();
+    }
+
+    public void CarSpeedUI()
+    {
+
+      if(useUI)
+      {
+          try
+          {
+            float absoluteCarSpeed = Mathf.Abs(carSpeed);
+            carSpeedText.text = Mathf.RoundToInt(absoluteCarSpeed).ToString();
+          }
+          catch(Exception ex)
+          {
+            Debug.LogWarning(ex);
+          }
+      }
+    }
+
+    public void CarSounds()
+    {
+      if(useSounds)
+      {
+        try
+        {
+          if(carEngineSound != null)
+          {
+            float engineSoundPitch = initialCarEngineSoundPitch + (Mathf.Abs(carRigidbody.velocity.magnitude) / 25f);
+            carEngineSound.pitch = engineSoundPitch;
+          }
+          if((isDrifting) || (isTractionLocked && Mathf.Abs(carSpeed) > 12f))
+          {
+            if(!tireScreechSound.isPlaying)
+            {
+              tireScreechSound.Play();
+            }
+          }
+          else if((!isDrifting) && (!isTractionLocked || Mathf.Abs(carSpeed) < 12f))
+          {
+            tireScreechSound.Stop();
+          }
+        }
+        catch(Exception ex)
+        {
+          Debug.LogWarning(ex);
+        }
+      }
+      else if(!useSounds)
+      {
+        if(carEngineSound != null && carEngineSound.isPlaying)
+        {
+          carEngineSound.Stop();
+        }
+        if(tireScreechSound != null && tireScreechSound.isPlaying)
+        {
+          tireScreechSound.Stop();
+        }
+      }
     }
 
     //Phương thức XOAY
@@ -329,7 +449,14 @@ public class CarController : MonoBehaviour
     // Phương thức này áp dụng mô-men xoắn dương cho bánh xe để di chuyển về phía trước.
     public void GoForward()
     {
-
+      if(Mathf.Abs(localVelocityX) > 2.5f)
+      {
+        isDrifting = true;
+      }
+      else
+      {
+        isDrifting = false;
+      }
       // tính toán tốc độ tăng tốc của xe
       throttleAxis = throttleAxis + (Time.deltaTime * 3f);
       if(throttleAxis > 1f)
@@ -369,6 +496,14 @@ public class CarController : MonoBehaviour
     //Phương thức này áp dụng mô-men xoắn âm cho bánh xe để di chuyển về phía sau
     public void GoReverse()
     {
+      if(Mathf.Abs(localVelocityX) > 2.5f)
+      {
+        isDrifting = true;
+      }
+      else
+      {
+        isDrifting = false;
+      }
       throttleAxis = throttleAxis - (Time.deltaTime * 3f);
       if(throttleAxis < -1f)
       {
@@ -416,6 +551,14 @@ public class CarController : MonoBehaviour
     //Giảm tốc độ xe theo biến decelerationMultiplier ( trong trường hợp không nhấn W , S , Space )
     public void DecelerateCar()
     {
+      if(Mathf.Abs(localVelocityX) > 2.5f)
+      {
+        isDrifting = true;
+      }
+      else
+      {
+        isDrifting = false;
+      }
       // chuyển trạng thái tăng ga về 0 
       if(throttleAxis != 0f)
       {
@@ -553,24 +696,35 @@ public class CarController : MonoBehaviour
 
     public void Boost()
     {
-        // Áp dụng boost vào tốc độ của xe
-        StartCoroutine(ApplyBoost());
-        //phải đợi sau boost để bắt đầu cooldown
-        boostTimer = boostDuration; // Đặt thời gian đếm ngược cho boost
-      // Vô hiệu hóa khả năng sử dụng boost cho đến khi cooldown kết thúc
-      canBoost = false;
+      CancelInvoke("RecoverNitrus");
+      if(nitrusValue > 0)
+      {
+        isBoosting = true;
+       nitrusValue -= Time.deltaTime * 1.5f;
+
+        if(accelerationMultiplier == originalAM)
+        {
+          accelerationMultiplier *= 2;
+        }
+      }
+      else
+      {
+        isBoosting = false;
+        accelerationMultiplier = originalAM;
+      }
     }
-
-    // Coroutine để áp dụng boost trong một khoảng thời gian nhất định
-    private IEnumerator ApplyBoost()
+    public void RecoverNitrus()
     {
-    // tăng mô-men xoắn để tăng tốc độ
-      int originalAccelerationMultiplier = accelerationMultiplier; // Lưu trữ giá trị gốc của accelerationMultiplier
-      accelerationMultiplier *= 2; //tăng gấp đôi accelerationMultiplier để tăng tốc độ
-
-      yield return new WaitForSeconds(boostDuration);
-
-      // Đặt lại giá trị accelerationMultiplier về giá trị ban đầu sau khi boost kết thúc
-      accelerationMultiplier = originalAccelerationMultiplier;
+      isBoosting = false;
+      if(nitrusValue < 6f)
+      {
+        nitrusValue += Time.deltaTime / 3;
+      }
+      if(nitrusValue > 6f)
+      {
+        nitrusValue = 6f;
+      }
+      Invoke("RecoverNitrus", Time.deltaTime);
+      accelerationMultiplier = originalAM;
     }
 }
