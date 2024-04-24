@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrackWaypoint : MonoBehaviour
+public class TrackWayPoint : MonoBehaviour
 {
 
     public Color linecolor;

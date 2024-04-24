@@ -6404,7 +6404,6 @@ GameObject:
   - component: {fileID: 4528143148527611953}
   - component: {fileID: 6148389704374174464}
   - component: {fileID: 5342859214105664936}
-  - component: {fileID: -7042136509915315144}
   m_Layer: 0
   m_Name: chiron
   m_TagString: Player
@@ -6475,16 +6474,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 200
   maxReverseSpeed: 60
-  accelerationMultiplier: 20
+  accelerationMultiplier: 13
   maxSteeringAngle: 27
   steeringSpeed: 0.5
   brakeForce: 350
   decelerationMultiplier: 2
   handbrakeDriftMultiplier: 5
-  canBoost: 1
-  boostDuration: 5
-  boostCooldown: 20
-  boostTimer: 0
+  nitrusValue: 0
+  originalAM: 0
+  isBoosting: 0
+  owned: 0
   bodyMassCenter: {x: 0, y: 0, z: 0}
   frontLeftMesh: {fileID: 7970120727683701021}
   frontLeftCollider: {fileID: 3142373499273375992}
@@ -6499,26 +6498,13 @@ MonoBehaviour:
   useSounds: 1
   carEngineSound: {fileID: 6316225543504627454}
   tireScreechSound: {fileID: 2013914368143505325}
-  carPrice: 39999
+  carPrice: 10000
   carName: Chiron
   hasFinished: 0
   carSpeed: 0
   isDrifting: 0
   isTractionLocked: 0
   RPM: 0
-  nitrusValue: 0
---- !u!114 &-7042136509915315144
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7056019913594415591}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b944690a0a7a01e4fb4fd38e3131565e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7086723202312553916
 GameObject:
   m_ObjectHideFlags: 0

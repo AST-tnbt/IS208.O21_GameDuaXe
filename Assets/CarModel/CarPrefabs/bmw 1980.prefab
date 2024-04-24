@@ -94,7 +94,6 @@ GameObject:
   - component: {fileID: 390506018830425253}
   - component: {fileID: 8293869477383130588}
   - component: {fileID: 1372899715590737140}
-  - component: {fileID: 5391045503373868409}
   m_Layer: 0
   m_Name: chassis
   m_TagString: Untagged
@@ -167,28 +166,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &5391045503373868409
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 326541759269587916}
-  m_Material: {fileID: 13400000, guid: 4e2a18fdb7d20fa40bafb75ae73783d7, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -4256789094099829062, guid: d49c9622a37afb346ae5983873de9a67, type: 3}
 --- !u!1 &346996862869123180
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,7 +375,6 @@ GameObject:
   - component: {fileID: 132866656362279457}
   - component: {fileID: 5587462355207955796}
   - component: {fileID: 5718446940788216897}
-  - component: {fileID: -732184263328494403}
   m_Layer: 0
   m_Name: bmw 1980
   m_TagString: Player
@@ -469,16 +445,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 200
   maxReverseSpeed: 56
-  accelerationMultiplier: 18
-  maxSteeringAngle: 45
-  steeringSpeed: 1
-  brakeForce: 600
-  decelerationMultiplier: 1
-  handbrakeDriftMultiplier: 4
-  canBoost: 1
-  boostDuration: 5
-  boostCooldown: 20
-  boostTimer: 0
+  accelerationMultiplier: 14
+  maxSteeringAngle: 27
+  steeringSpeed: 0.5
+  brakeForce: 450
+  decelerationMultiplier: 3
+  handbrakeDriftMultiplier: 5
+  nitrusValue: 0
+  originalAM: 0
+  isBoosting: 0
+  owned: 0
   bodyMassCenter: {x: 0, y: 0, z: 0}
   frontLeftMesh: {fileID: 3488591799574767197}
   frontLeftCollider: {fileID: 7033447926278259331}
@@ -493,26 +469,13 @@ MonoBehaviour:
   useSounds: 1
   carEngineSound: {fileID: 4486502239469412341}
   tireScreechSound: {fileID: 8220797599548550822}
-  carPrice: 9999
+  carPrice: 2000
   carName: BMW 1980
   hasFinished: 0
   carSpeed: 0
   isDrifting: 0
   isTractionLocked: 0
   RPM: 0
-  nitrusValue: 0
---- !u!114 &-732184263328494403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 660692891519056838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b944690a0a7a01e4fb4fd38e3131565e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &671267630591533085
 GameObject:
   m_ObjectHideFlags: 0
@@ -3256,37 +3219,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &4780640727162767052
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1907174156014993586}
-  m_Layer: 0
-  m_Name: wingOff
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1907174156014993586
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4780640727162767052}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.011656164, y: 0.70701075, z: 0.011656164, w: 0.70701075}
-  m_LocalPosition: {x: -0.0002753398, y: 0.25006807, z: 2.3143709}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1741342507002988880}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4801003041398828431
 GameObject:
   m_ObjectHideFlags: 0
@@ -4288,89 +4220,6 @@ WheelCollider:
   m_LayerOverridePriority: 0
   m_Enabled: 1
   m_ProvidesContacts: 0
---- !u!1 &6517234321846334931
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7864205503784301970}
-  - component: {fileID: 1254756377449539925}
-  - component: {fileID: 789415762874873117}
-  m_Layer: 0
-  m_Name: wing 2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &7864205503784301970
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6517234321846334931}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.011656164, y: 0.70701075, z: 0.011656164, w: 0.70701075}
-  m_LocalPosition: {x: -0, y: 0.362, z: 2.318}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1741342507002988880}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &1254756377449539925
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6517234321846334931}
-  m_Mesh: {fileID: 2406757839284331229, guid: d49c9622a37afb346ae5983873de9a67, type: 3}
---- !u!23 &789415762874873117
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6517234321846334931}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 5be59ecf63eea764e86521ba76b194e4, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &6574105631365816994
 GameObject:
   m_ObjectHideFlags: 0
@@ -5326,9 +5175,7 @@ Transform:
   - {fileID: 3974959229931244731}
   - {fileID: 7624811326621652726}
   - {fileID: 4285284577796794980}
-  - {fileID: 1907174156014993586}
   - {fileID: 1569075982612806032}
-  - {fileID: 7864205503784301970}
   - {fileID: 7710984407351673814}
   - {fileID: 8989468061495896267}
   - {fileID: 2150999079559387811}
@@ -5839,7 +5686,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.1862488, y: 0.5591936, z: 2.233284}
   m_Center: {x: 0.027687073, y: -0.029118061, z: 0.14849472}
