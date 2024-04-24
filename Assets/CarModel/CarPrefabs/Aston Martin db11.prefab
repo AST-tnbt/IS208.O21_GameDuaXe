@@ -4698,7 +4698,6 @@ GameObject:
   - component: {fileID: 2842216924481204036}
   - component: {fileID: 5447424746929596090}
   - component: {fileID: 4475084210481241577}
-  - component: {fileID: -7214677149296305990}
   m_Layer: 0
   m_Name: Aston Martin db11
   m_TagString: Player
@@ -4775,10 +4774,10 @@ MonoBehaviour:
   brakeForce: 350
   decelerationMultiplier: 2
   handbrakeDriftMultiplier: 5
-  canBoost: 1
-  boostDuration: 5
-  boostCooldown: 20
-  boostTimer: 0
+  nitrusValue: 0
+  originalAM: 0
+  isBoosting: 0
+  owned: 0
   bodyMassCenter: {x: 0, y: 0, z: 0}
   frontLeftMesh: {fileID: 2465648064279270026}
   frontLeftCollider: {fileID: 2327234084601993282}
@@ -4793,26 +4792,13 @@ MonoBehaviour:
   useSounds: 1
   carEngineSound: {fileID: 2176245082733606863}
   tireScreechSound: {fileID: 5937699820443453084}
-  carPrice: 19999
+  carPrice: 3000
   carName: Aston MarTin DB11
   hasFinished: 0
   carSpeed: 0
   isDrifting: 0
   isTractionLocked: 0
   RPM: 0
-  nitrusValue: 0
---- !u!114 &-7214677149296305990
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6191890507002444297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b944690a0a7a01e4fb4fd38e3131565e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6239077161298042987
 GameObject:
   m_ObjectHideFlags: 0
