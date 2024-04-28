@@ -6495,7 +6495,7 @@ MonoBehaviour:
   rearRightCollider: {fileID: 7060551724774438841}
   useUI: 0
   carSpeedText: {fileID: 0}
-  useSounds: 1
+  useSounds: 0
   carEngineSound: {fileID: 6316225543504627454}
   tireScreechSound: {fileID: 2013914368143505325}
   carPrice: 10000
