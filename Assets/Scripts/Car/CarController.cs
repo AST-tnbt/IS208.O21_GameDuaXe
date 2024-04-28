@@ -182,18 +182,18 @@ public class CarController : MonoBehaviour
         }
       }
 
-      string currentSceneName = SceneManager.GetActiveScene().name;
-      if (currentSceneName == "MainScene")
-      {
-        if (carEngineSound != null)
-        {
-            carEngineSound.Stop();
-        }
-        if (tireScreechSound != null)
-        {
-            tireScreechSound.Stop();
-        }
-      }
+      // string currentSceneName = SceneManager.GetActiveScene().name;
+      // if (currentSceneName == "MainScene" || currentSceneName == "UI")
+      // {
+      //   if (carEngineSound != null)
+      //   {
+      //       carEngineSound.Stop();
+      //   }
+      //   if (tireScreechSound != null)
+      //   {
+      //       tireScreechSound.Stop();
+      //   }
+      // }
       
       //UI
       if(useUI)
