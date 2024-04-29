@@ -4694,17 +4694,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &681281646 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8373427570745239290, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-  m_PrefabInstance: {fileID: 1604479708}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea694d61de59edc40b211af63476b9d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &711338831
 GameObject:
   m_ObjectHideFlags: 0
@@ -6512,6 +6501,74 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1001 &1037475897
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6299976101182987771, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_Name
+      value: ListCar
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+--- !u!114 &1037475898 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8373427570745239290, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
+  m_PrefabInstance: {fileID: 1037475897}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea694d61de59edc40b211af63476b9d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1081329352
 GameObject:
   m_ObjectHideFlags: 0
@@ -9639,63 +9696,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1565365358}
   m_CullTransparentMesh: 1
---- !u!1001 &1604479708
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 6299976101182987771, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_Name
-      value: ListCar
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6371741034797991311, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a61367732fdf20c4baa15a6f070e0493, type: 3}
 --- !u!1 &1640850163
 GameObject:
   m_ObjectHideFlags: 0
@@ -13026,7 +13026,7 @@ MonoBehaviour:
   mainCurrency: {fileID: 523438544}
   shopCurrency: {fileID: 69086144}
   carInfo: {fileID: 41686302}
-  listOfCars: {fileID: 681281646}
+  listOfCars: {fileID: 1037475898}
   rotateTurnTable: {fileID: 140943161}
   lockImage: {fileID: 98844042}
   unlockImage: {fileID: 1907960568}
@@ -14719,7 +14719,7 @@ RectTransform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1604479708}
+  - {fileID: 1037475897}
   - {fileID: 2074768088}
   - {fileID: 205927550}
   - {fileID: 1506053041}

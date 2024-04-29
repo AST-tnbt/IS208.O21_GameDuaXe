@@ -17,6 +17,10 @@ public class MapSelectManager : MonoBehaviour
     public TextMeshProUGUI nameOfMap;
     public GameObject rotateTurnTable;
 
+    [Header("SFX")]
+    [Tooltip("The GameObject holding the Audio Source component for the HOVER SOUND")]
+    public AudioSource hoverSound;
+
     [HideInInspector] public float rotateSpeed = 10f;
     [HideInInspector] public int mapPointer = 0;
 
@@ -34,7 +38,7 @@ public class MapSelectManager : MonoBehaviour
         rotateTurnTable.transform.Rotate(Vector3.up * rotateSpeed * Time.deltaTime);
     }
 
-    public void RightButton()
+    public void RightButtonClicked()
     {
         if(mapPointer < listOfMap.Maps.Length - 1)
         {
@@ -56,7 +60,7 @@ public class MapSelectManager : MonoBehaviour
         }
     }
 
-    public void LeftButton()
+    public void LeftButtonClicked()
     {
         if(mapPointer > 0)
         {
@@ -85,16 +89,20 @@ public class MapSelectManager : MonoBehaviour
         nameOfMap.text = MM.mapName;
     }
 
-    public void StartGameButton()
+    public void StartGameButtonClicked()
     {
         int mapIndex = PlayerPrefs.GetInt("mp");
         MapModifier MM = listOfMap.Maps[mapIndex].GetComponent<MapModifier>();
 
         SceneManager.LoadScene(MM.mapName);
     }
-    public void BackButton()
+    public void BackButtonClicked()
     {
         SceneManager.LoadScene("MainScene");
     }
 
+    public void PlayHover()
+    {
+		hoverSound.Play();
+	}
 }
