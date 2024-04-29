@@ -126,6 +126,7 @@ public class UIMenuManager : MonoBehaviour
             childObject.GetComponent<CarController>().tireScreechSound.Stop();
         }
     }
+
     public void InitOwnedCarData()
     {
         for (int i = 0; i < saveLoadManager.playerData.OwnedCar.Length; i++)
@@ -269,6 +270,15 @@ public class UIMenuManager : MonoBehaviour
             PlayerPrefs.SetInt("carPointer",carPointer);
             GameObject childObject = Instantiate(listOfCars.Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
             childObject.transform.parent = rotateTurnTable.transform;
+            childObject.GetComponent<CarController>().enabled = false;
+            if(childObject.GetComponent<CarController>().carEngineSound != null)
+            {
+                childObject.GetComponent<CarController>().carEngineSound.Stop();
+            }
+            if(childObject.GetComponent<CarController>().tireScreechSound != null)
+            {
+                childObject.GetComponent<CarController>().tireScreechSound.Stop();
+            }
             GetCarInfo();
         }
     }
@@ -291,6 +301,15 @@ public class UIMenuManager : MonoBehaviour
             PlayerPrefs.SetInt("carPointer",carPointer);
             GameObject childObject = Instantiate(listOfCars.Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
             childObject.transform.parent = rotateTurnTable.transform;
+            childObject.GetComponent<CarController>().enabled = false;
+            if(childObject.GetComponent<CarController>().carEngineSound != null)
+            {
+                childObject.GetComponent<CarController>().carEngineSound.Stop();
+            }
+            if(childObject.GetComponent<CarController>().tireScreechSound != null)
+            {
+                childObject.GetComponent<CarController>().tireScreechSound.Stop();
+            }
             GetCarInfo();
         }
     }
@@ -422,6 +441,10 @@ public class UIMenuManager : MonoBehaviour
     //Exit canvas
     public void QuitGame()
     {
+        saveLoadManager.playerData.coin = PlayerPrefs.GetInt("currency");
+        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("cPointer");
+        SaveOwnedCarData();
+        saveLoadManager.SaveData();
 		#if UNITY_EDITOR
 			UnityEditor.EditorApplication.isPlaying = false;
 		#else
