@@ -7,6 +7,9 @@ using UnityEditor;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine.UI;
+using System;
+using JetBrains.Annotations;
+
 public class UIMenuManager : MonoBehaviour
 {
     [Header("Camera")]
@@ -60,7 +63,8 @@ public class UIMenuManager : MonoBehaviour
     public AudioSource swooshSound;
 
     [Header("OTHERS")]
-
+    public GameObject notifCanvas;
+    public TextMeshProUGUI notifText;
     public GameObject buyButton;
     public GameObject lockButton;
     public GameObject leftButton;
@@ -83,13 +87,16 @@ public class UIMenuManager : MonoBehaviour
     void Awake()
     {
         //Set active 
+
         mainCanvas.SetActive(true);
         shopCanvas.SetActive(false);
         settingsCanvas.SetActive(false);
+        notifCanvas.SetActive(false);
         mainMenu.SetActive(true);
         playMenu.SetActive(false);
 		exitMenu.SetActive(false);
-
+        startToFinal = true;
+        finalToStart = false;
 
         //load data
         PlayerPrefs.DeleteAll();
@@ -190,8 +197,8 @@ public class UIMenuManager : MonoBehaviour
         playMenu.SetActive(false);
         exitMenu.SetActive(false);
         shopCanvas.SetActive(true);
-        startToFinal = true;
-        finalToStart = false;
+        finalToStart = true;
+        startToFinal = false;
         
         shopCurrency.text = saveLoadManager.playerData.coin.ToString();
 
@@ -328,6 +335,13 @@ public class UIMenuManager : MonoBehaviour
             PlayerPrefs.SetInt("Car_" + carIndex, 1);
 
             GetCarInfo();
+            ShowNotifMessage("Buy success!");
+            Invoke("CloseNotifMessage",1.5f);
+        }
+        else
+        {
+            ShowNotifMessage("Not enough currency");
+            Invoke("CloseNotifMessage",1.5f);
         }
     }
 
@@ -382,8 +396,8 @@ public class UIMenuManager : MonoBehaviour
         mainCanvas.SetActive(true);
         mainMenu.SetActive(true);
 
-        finalToStart = true;
-        startToFinal = false;
+        startToFinal = true;
+        finalToStart = false;
 
         int chooseIndex = PlayerPrefs.GetInt("cPointer");
 
@@ -467,6 +481,17 @@ public class UIMenuManager : MonoBehaviour
 		swooshSound.Play();
 	}
 
+    private void ShowNotifMessage(string message)
+    {
+        notifText.text = "" + message;
+        notifCanvas.SetActive(true);
+    }
+    
+    public void CloseNotifMessage()
+    {
+        notifText.text = "";
+        notifCanvas.SetActive(false);
+    }
     // IEnumerator LoadAsynchronously(string sceneName)
     // { // scene name is just the name of the current scene being loaded
 	// 	AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);

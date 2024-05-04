@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -19,14 +18,6 @@ public class GameManager : MonoBehaviour
     private float desiredPosition;
     private GameObject[] presentGameObjectCars , fullArray;
 
-    [Header ("Racers List")]
-    public GameObject uiList;
-    public GameObject uiListFolder;
-    public GameObject backImage;
-    private List<Car> presentCars;
-    private List<GameObject> temporaryList;
-    private GameObject[] temporaryArray;
-
     void Awake()
     {
         //Tạo một đối tượng mới trong trò chơi từ danh sách vehicles trong biến list. PlayerPrefs.GetInt("pointer")
@@ -34,6 +25,7 @@ public class GameManager : MonoBehaviour
 
         //Tìm đối tượng có tag là "Player" trong cảnh và gán vào biến CC. Sau đó, từ đối tượng này, thành phần controller được trích xuất và gán vào biến CC.
         CC = GameObject.FindGameObjectWithTag ("Player").GetComponent<CarController>();
+        CC.useSounds = true;
     }
 
     private void FixedUpdate () 

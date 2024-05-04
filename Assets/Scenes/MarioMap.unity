@@ -3414,9 +3414,6 @@ MonoBehaviour:
   startPosition: {fileID: 445926283}
   Kph: {fileID: 50476190}
   nitrusSlider: {fileID: 1607440438}
-  uiList: {fileID: 0}
-  uiListFolder: {fileID: 0}
-  backImage: {fileID: 0}
 --- !u!1 &1248624872
 GameObject:
   m_ObjectHideFlags: 0

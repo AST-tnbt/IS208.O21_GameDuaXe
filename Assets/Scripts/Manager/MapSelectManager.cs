@@ -3,19 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.UI;
+using System;
+using JetBrains.Annotations;
 
 public class MapSelectManager : MonoBehaviour
 {
 
     [Header("Car Select Canvas")]
-    public GameObject SelectMapCanvas;
+    public GameObject selectMapCanvas;
+    public GameObject betMenu;
+    public GameObject errorCanvas;
+    public TextMeshProUGUI errorText;
     public GameObject rightButton;
     public GameObject leftButton;
-    public GameObject startButton;
-    public GameObject backButton;
     public ListMap listOfMap;
     public TextMeshProUGUI nameOfMap;
     public GameObject rotateTurnTable;
+    public TextMeshProUGUI currency;
+    public TMP_InputField inputField;
 
     [Header("SFX")]
     [Tooltip("The GameObject holding the Audio Source component for the HOVER SOUND")]
@@ -26,10 +32,21 @@ public class MapSelectManager : MonoBehaviour
 
     void Awake()
     {
-        SelectMapCanvas.SetActive(true);
+        betMenu.SetActive(false);
+        errorCanvas.SetActive(false);
+        selectMapCanvas.SetActive(true);
+        currency.text = PlayerPrefs.GetInt("currency").ToString();
         mapPointer = PlayerPrefs.GetInt("mp");
         GameObject childObject = Instantiate(listOfMap.Maps[mapPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
         childObject.transform.parent = rotateTurnTable.transform;
+        if(mapPointer == 0)
+        {
+            leftButton.SetActive(false);
+        }
+        if(mapPointer == listOfMap.Maps.Length - 1)
+        {
+            rightButton.SetActive(false);
+        }
         GetMapInfo();
     }
 
@@ -40,6 +57,7 @@ public class MapSelectManager : MonoBehaviour
 
     public void RightButtonClicked()
     {
+        betMenu.SetActive(false);
         if(mapPointer < listOfMap.Maps.Length - 1)
         {
             leftButton.SetActive(true);
@@ -62,6 +80,7 @@ public class MapSelectManager : MonoBehaviour
 
     public void LeftButtonClicked()
     {
+        betMenu.SetActive(false);
         if(mapPointer > 0)
         {
             rightButton.SetActive(true);
@@ -91,18 +110,60 @@ public class MapSelectManager : MonoBehaviour
 
     public void StartGameButtonClicked()
     {
-        int mapIndex = PlayerPrefs.GetInt("mp");
-        MapModifier MM = listOfMap.Maps[mapIndex].GetComponent<MapModifier>();
-
-        SceneManager.LoadScene(MM.mapName);
+        betMenu.SetActive(true);
     }
     public void BackButtonClicked()
     {
         SceneManager.LoadScene("MainScene");
     }
+    
+    public void BetPlayButtonClicked()
+    {
+        int coin;
+        try
+        {
+            string inputValue = inputField.text;
+            coin = int.Parse(inputValue);
+        }
+        catch (FormatException)
+        {
+            ShowErrorMessage("Invalid input value");
+            Invoke("CloseErrorMessage",1.5f);
+            return;
+        }
+        int currentCoin = PlayerPrefs.GetInt("currency");
+        if(coin > currentCoin)
+        {
+            ShowErrorMessage("Not enough currency");
+            Invoke("CloseErrorMessage",1.5f);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("betcoin", coin);
+            int mapIndex = PlayerPrefs.GetInt("mp");
+            MapModifier MM = listOfMap.Maps[mapIndex].GetComponent<MapModifier>();
+            SceneManager.LoadScene(MM.mapName);
+        }
+    }
 
+    public void BetBackButtonClicked()
+    {
+        betMenu.SetActive(false);
+    }
     public void PlayHover()
     {
 		hoverSound.Play();
 	}
+
+    private void ShowErrorMessage(string message)
+    {
+        errorText.text = "" + message;
+        errorCanvas.SetActive(true);
+    }
+    
+    public void CloseErrorMessage()
+    {
+        errorText.text = "";
+        errorCanvas.SetActive(false);
+    }
 }
