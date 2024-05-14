@@ -9,6 +9,8 @@ TagManager:
   - gameManager
   - Map
   - AI
+  - Collider
+  - AICar1
   layers:
   - Default
   - TransparentFX

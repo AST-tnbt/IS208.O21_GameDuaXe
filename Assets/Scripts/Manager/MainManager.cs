@@ -83,6 +83,10 @@ public class UIMenuManager : MonoBehaviour
     [HideInInspector] public int carPointer;
     [HideInInspector] public int choosePointer;
     [HideInInspector] public int coin;
+    private int slotOrder = 0;
+    private int betCoin = 0;
+    private int isLoad = 0;
+    private int isHard = 0;
 
     void Awake()
     {
@@ -97,21 +101,46 @@ public class UIMenuManager : MonoBehaviour
 		exitMenu.SetActive(false);
         startToFinal = true;
         finalToStart = false;
-
-        //load data
-        PlayerPrefs.DeleteAll();
+        
+        coin = PlayerPrefs.GetInt("currency",0);
+        choosePointer = PlayerPrefs.GetInt("cPointer", 0);
+        carPointer= PlayerPrefs.GetInt("carPointer", 0);
+        betCoin = PlayerPrefs.GetInt("Betcoin",0);
+        slotOrder = PlayerPrefs.GetInt("SlotOrder",0);
+        isHard = PlayerPrefs.GetInt("IsHard",0);
+        Debug.Log("coin " + coin);
+        if(slotOrder == 1 && betCoin != 0)
+        {
+            string text = "You gain: " + betCoin.ToString();
+            ShowNotifMessage(text);
+            Invoke("CloseNotifMessage",2f);
+            coin += betCoin;
+        }
+        else if(slotOrder == 2 && betCoin != 0)
+        {
+            string text = "You lose: " + betCoin.ToString();
+            ShowNotifMessage(text);
+            Invoke("CloseNotifMessage",2f);
+            coin -= betCoin;
+        }
+        //load/save data
+        //PlayerPrefs.DeleteAll();
         saveLoadManager = FindObjectOfType<SaveLoadManager>();
         if (saveLoadManager == null)
         {
             Debug.LogError("Không tìm thấy đối tượng SaveLoadManager trong Scene!");
         }
-
-        saveLoadManager.LoadData();
-
-        coin = saveLoadManager.playerData.coin;
-        choosePointer = saveLoadManager.playerData.lastChoose;
-        carPointer = choosePointer;
-        InitOwnedCarData();
+        isLoad = PlayerPrefs.GetInt("IsLoad",0);
+        Debug.Log("IsLoad = " + isLoad);
+        if(isLoad == 0)
+        {
+            coin = saveLoadManager.playerData.coin;
+            choosePointer = saveLoadManager.playerData.lastChoose;
+            carPointer = choosePointer;
+            InitOwnedCarData();
+            isLoad = 1;
+            PlayerPrefs.SetInt("IsLoad",isLoad);
+        }
 
         //Save Data vào PlayerPref
         PlayerPrefs.SetInt("currency", coin);
@@ -132,6 +161,12 @@ public class UIMenuManager : MonoBehaviour
         {
             childObject.GetComponent<CarController>().tireScreechSound.Stop();
         }
+
+
+        saveLoadManager.playerData.coin = PlayerPrefs.GetInt("currency");
+        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("cPointer");
+        SaveOwnedCarData();
+        saveLoadManager.SaveData();
     }
 
     public void InitOwnedCarData()
@@ -225,9 +260,16 @@ public class UIMenuManager : MonoBehaviour
         lineGame.SetActive(true);
         PanelControls.SetActive(false);
         lineControls.SetActive(false);
-        //test
-        lineNormal.SetActive(true);
-        lineHardcore.SetActive(false);
+        if(isHard == 0)
+        {
+            lineNormal.SetActive(true);
+            lineHardcore.SetActive(false);
+        }
+        else if(isHard == 1)
+        {
+            lineNormal.SetActive(false);
+            lineHardcore.SetActive(true);
+        }
     }
 
     public void ExitButtonClicked()
@@ -435,13 +477,18 @@ public class UIMenuManager : MonoBehaviour
     {
         lineHardcore.SetActive(false);
         lineNormal.SetActive(true);
+        isHard = 0;
+        PlayerPrefs.SetInt("IsHard",isHard);
+        Debug.Log("IsHard = " + isHard);
     }
 
     public void HardcoreButtonClicked()
     {
-
         lineNormal.SetActive(false);
         lineHardcore.SetActive(true);
+        isHard = 1;
+        PlayerPrefs.SetInt("IsHard",isHard);
+        Debug.Log("IsHard = " + isHard);
     }
 
 	public void ControlButtonClicked()

@@ -15,6 +15,12 @@ EditorBuildSettings:
     path: Assets/Scenes/MapSelectScene.unity
     guid: 622b5790e766d53429142250c64b99ee
   - enabled: 1
-    path: Assets/Scenes/MarioMap.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/F1Map.unity
+    guid: 39952e4f73a632247a38139cab428dc1
+  - enabled: 1
+    path: Assets/Scenes/FigureOfEightMap.unity
+    guid: 80ae733a2feae2e4b8cd33ac4c1bd629
+  - enabled: 1
+    path: Assets/Scenes/OvalMap.unity
+    guid: 7370ca3895f10c64fb13df6d0dfd56bc
   m_configObjects: {}

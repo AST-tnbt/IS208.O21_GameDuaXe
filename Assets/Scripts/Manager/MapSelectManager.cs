@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using System;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 
 public class MapSelectManager : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class MapSelectManager : MonoBehaviour
 
     [HideInInspector] public float rotateSpeed = 10f;
     [HideInInspector] public int mapPointer = 0;
+    [HideInInspector] public int round = 0;
 
     void Awake()
     {
@@ -39,6 +41,7 @@ public class MapSelectManager : MonoBehaviour
         mapPointer = PlayerPrefs.GetInt("mp");
         GameObject childObject = Instantiate(listOfMap.Maps[mapPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
         childObject.transform.parent = rotateTurnTable.transform;
+        childObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         if(mapPointer == 0)
         {
             leftButton.SetActive(false);
@@ -74,6 +77,7 @@ public class MapSelectManager : MonoBehaviour
             PlayerPrefs.SetInt("mp",mapPointer);
             GameObject childObject = Instantiate(listOfMap.Maps[mapPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
             childObject.transform.parent = rotateTurnTable.transform;
+            childObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             GetMapInfo();
         }
     }
@@ -97,6 +101,7 @@ public class MapSelectManager : MonoBehaviour
             PlayerPrefs.SetInt("mp",mapPointer);
             GameObject childObject = Instantiate(listOfMap.Maps[mapPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
             childObject.transform.parent = rotateTurnTable.transform;
+            childObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             GetMapInfo();
         }
     }
@@ -108,9 +113,23 @@ public class MapSelectManager : MonoBehaviour
         nameOfMap.text = MM.mapName;
     }
 
-    public void StartGameButtonClicked()
+    public void Lv1ButtonClicked()
     {
         betMenu.SetActive(true);
+        round = 1;
+        PlayerPrefs.SetInt("Round", round);
+    }
+    public void Lv2ButtonClicked()
+    {
+        betMenu.SetActive(true);
+        round = 2;
+        PlayerPrefs.SetInt("Round", round);
+    }
+    public void Lv3ButtonClicked()
+    {
+        betMenu.SetActive(true);
+        round = 3;
+        PlayerPrefs.SetInt("Round", round);
     }
     public void BackButtonClicked()
     {
@@ -131,6 +150,12 @@ public class MapSelectManager : MonoBehaviour
             Invoke("CloseErrorMessage",1.5f);
             return;
         }
+        if(coin % 200 != 0 || coin == 0)
+        {
+            ShowErrorMessage("Entered must be a multiple of 200.");
+            Invoke("CloseErrorMessage",1.5f);
+            return;
+        }
         int currentCoin = PlayerPrefs.GetInt("currency");
         if(coin > currentCoin)
         {
@@ -139,7 +164,8 @@ public class MapSelectManager : MonoBehaviour
         }
         else
         {
-            PlayerPrefs.SetInt("betcoin", coin);
+            PlayerPrefs.SetInt("Betcoin", coin);
+            Debug.Log(PlayerPrefs.GetInt("Betcoin"));
             int mapIndex = PlayerPrefs.GetInt("mp");
             MapModifier MM = listOfMap.Maps[mapIndex].GetComponent<MapModifier>();
             SceneManager.LoadScene(MM.mapName);

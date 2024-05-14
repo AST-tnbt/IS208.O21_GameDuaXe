@@ -34,10 +34,10 @@ Transform:
   - {fileID: 1296106577385594323}
   - {fileID: 1781781416077168597}
   - {fileID: 651354197151449408}
-  - {fileID: 6485539228647384580}
   - {fileID: 3693740536968530392}
   - {fileID: 332898783100411503}
   - {fileID: 3930186979646741476}
+  - {fileID: 6485539228647384580}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &8526931570994374395
@@ -599,7 +599,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: f632e2ace80a32e47a2c531f64901a50, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.3
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -929,7 +929,7 @@ GameObject:
   - component: {fileID: 1867584242146879053}
   m_Layer: 0
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: Collider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1254,7 +1254,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 771ce407ce807b74885ec23ebd1e6647, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.3
   m_Pitch: 0.75
   Loop: 1
   Mute: 0

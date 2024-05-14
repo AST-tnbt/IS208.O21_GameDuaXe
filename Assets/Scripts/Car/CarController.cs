@@ -89,7 +89,7 @@ public class CarController : MonoBehaviour
       [Header("INFO")]
       public int carPrice ;
       public string carName;
-      public bool hasFinished;
+      public bool hasFinished = false;
 
     //CAR DATA
 

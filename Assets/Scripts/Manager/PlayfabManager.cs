@@ -100,6 +100,7 @@ public class PlayfabManager : MonoBehaviour
         Invoke("CloseNotificationMessage", 1f);
         Invoke("GoToMainScene",2f);
         saveLoadManager.LoadData();
+        PlayerPrefs.DeleteAll();
     }
     private void OnRecoverSuccess(SendAccountRecoveryEmailResult result)
     {
@@ -113,6 +114,7 @@ public class PlayfabManager : MonoBehaviour
         Invoke("CloseNotificationMessage", 1f);
         Invoke("GoToMainScene",2f);
         saveLoadManager.SaveData();
+        PlayerPrefs.DeleteAll();
     }
 
     //Show notification
