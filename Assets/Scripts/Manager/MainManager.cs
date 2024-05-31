@@ -7,8 +7,9 @@ using UnityEditor;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine.UI;
-using System;
 using JetBrains.Annotations;
+using UnityStandardAssets.Vehicles.Car;
+using Unity.VisualScripting;
 
 public class UIMenuManager : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class UIMenuManager : MonoBehaviour
 
     [Tooltip("The Canvas for when the Shop button is clicked")]
     public GameObject shopCanvas;
+
+    [Tooltip("The Canvas for when the Inventory button is clicked")]
+    public GameObject invCanvas;
 
     [Tooltip("Setting window")]
     public GameObject settingsCanvas;
@@ -66,27 +70,32 @@ public class UIMenuManager : MonoBehaviour
     public GameObject notifCanvas;
     public TextMeshProUGUI notifText;
     public GameObject buyButton;
+    public GameObject shopLeftButton;
+    public GameObject shopRightButton;
+    public GameObject invLeftButton;
+    public GameObject invRightButton;
     public GameObject lockButton;
-    public GameObject leftButton;
-    public GameObject rightButton;
+    public Image lockImage , unlockImage;
     public TextMeshProUGUI mainCurrency;
     public TextMeshProUGUI shopCurrency;
-    public TextMeshProUGUI carInfo;
+    public TextMeshProUGUI invCurrency;
+    public TextMeshProUGUI carShopInfo;
+    public TextMeshProUGUI carInvInfo;
     public ListCar listOfCars;
+    public ListCar[] listCarSets;
     public GameObject rotateTurnTable;
     private bool finalToStart,startToFinal;
-    public Image lockImage, unlockImage;
+
     [HideInInspector] public float rotateSpeed = 10f;
     [HideInInspector] public SaveLoadManager saveLoadManager;
 
     //PlayerPref
     [HideInInspector] public int carPointer;
-    [HideInInspector] public int choosePointer;
+    [HideInInspector] public int carSetPointer;
     [HideInInspector] public int coin;
-    private int slotOrder = 0;
-    private int betCoin = 0;
     private int isLoad = 0;
     private int isHard = 0;
+    private int chCarSet = 0;
 
     void Awake()
     {
@@ -94,6 +103,7 @@ public class UIMenuManager : MonoBehaviour
 
         mainCanvas.SetActive(true);
         shopCanvas.SetActive(false);
+        invCanvas.SetActive(false);
         settingsCanvas.SetActive(false);
         notifCanvas.SetActive(false);
         mainMenu.SetActive(true);
@@ -102,26 +112,70 @@ public class UIMenuManager : MonoBehaviour
         startToFinal = true;
         finalToStart = false;
         
-        coin = PlayerPrefs.GetInt("currency",0);
-        choosePointer = PlayerPrefs.GetInt("cPointer", 0);
-        carPointer= PlayerPrefs.GetInt("carPointer", 0);
-        betCoin = PlayerPrefs.GetInt("Betcoin",0);
-        slotOrder = PlayerPrefs.GetInt("SlotOrder",0);
-        isHard = PlayerPrefs.GetInt("IsHard",0);
-        Debug.Log("coin " + coin);
-        if(slotOrder == 1 && betCoin != 0)
+        isLoad = PlayerPrefs.GetInt("IsLoad",0);
+        if(isLoad == 1)
         {
-            string text = "You gain: " + betCoin.ToString();
-            ShowNotifMessage(text);
-            Invoke("CloseNotifMessage",2f);
-            coin += betCoin;
-        }
-        else if(slotOrder == 2 && betCoin != 0)
-        {
-            string text = "You lose: " + betCoin.ToString();
-            ShowNotifMessage(text);
-            Invoke("CloseNotifMessage",2f);
-            coin -= betCoin;
+            carSetPointer = PlayerPrefs.GetInt("csPointer",0);
+            coin = PlayerPrefs.GetInt("currency",0);
+            carPointer = Random.Range(0, 9);
+            isHard = PlayerPrefs.GetInt("IsHard",0);
+            chCarSet = PlayerPrefs.GetInt("chPointer",0);
+
+            int isStartGame = PlayerPrefs.GetInt("StartGame",0);
+            if(isStartGame == 1)
+            {
+                //cal bet
+                int betCoin1 = PlayerPrefs.GetInt("Betcoin1",0);
+                int betCoin2 = PlayerPrefs.GetInt("Betcoin2",0);
+                int betCoin3 = PlayerPrefs.GetInt("Betcoin3",0);
+                string car1Bet =  PlayerPrefs.GetString("CarTop1Bet");
+                string car2Bet =  PlayerPrefs.GetString("CarTop2Bet");
+                string car3Bet =  PlayerPrefs.GetString("CarTop3Bet");
+                string car1Res = PlayerPrefs.GetString("CarTop1Res");
+                string car2Res = PlayerPrefs.GetString("CarTop2Res");
+                string car3Res = PlayerPrefs.GetString("CarTop3Res");
+                int result = 0;
+                if(car1Bet == car1Res)
+                {
+                    result += betCoin1;
+                }
+                else 
+                {
+                    result -= betCoin1;
+                }
+                if(car2Bet == car2Res)
+                {
+                    result += betCoin2;
+                }
+                else 
+                {
+                    result -= betCoin2;
+                }
+                if(car3Bet == car3Res)
+                {
+                    result += betCoin3;
+                }
+                else 
+                {
+                    result -= betCoin3;
+                }
+                if(result >= 0)
+                {
+                    string text = "You gain: " + result.ToString();
+                    ShowNotifMessage(text);
+                    Invoke("CloseNotifMessage",2f);
+                }
+                else
+                {
+                    string text = "You lose: " + (-result).ToString();
+                    ShowNotifMessage(text);
+                    Invoke("CloseNotifMessage",2f);
+                }
+                coin += result;
+                PlayerPrefs.SetInt("StartGame",0);
+            }
+            
+
         }
         //load/save data
         //PlayerPrefs.DeleteAll();
@@ -135,36 +189,32 @@ public class UIMenuManager : MonoBehaviour
         if(isLoad == 0)
         {
             coin = saveLoadManager.playerData.coin;
-            choosePointer = saveLoadManager.playerData.lastChoose;
-            carPointer = choosePointer;
+            carSetPointer = saveLoadManager.playerData.lastChoose;
+            chCarSet = carSetPointer;
+            carPointer = Random.Range(1, 10);
             InitOwnedCarData();
+
             isLoad = 1;
             PlayerPrefs.SetInt("IsLoad",isLoad);
         }
 
         //Save Data vào PlayerPref
         PlayerPrefs.SetInt("currency", coin);
-        PlayerPrefs.SetInt("cPointer", choosePointer);
         PlayerPrefs.SetInt("carPointer", carPointer);
+        PlayerPrefs.SetInt("csPointer", carSetPointer);
+        PlayerPrefs.SetInt("chPointer", chCarSet);
 
         //hiển thị giao diện
         mainCurrency.text = PlayerPrefs.GetInt("currency").ToString();
         GameObject childObject = Instantiate(listOfCars.Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
         childObject.transform.parent = rotateTurnTable.transform;
 
-        childObject.GetComponent<CarController>().enabled = false;
-        if(childObject.GetComponent<CarController>().carEngineSound != null)
-        {
-            childObject.GetComponent<CarController>().carEngineSound.Stop();
-        }
-        if(childObject.GetComponent<CarController>().tireScreechSound != null)
-        {
-            childObject.GetComponent<CarController>().tireScreechSound.Stop();
-        }
-
+        //childObject.GetComponent<AIController>().enabled = false;
+        childObject.GetComponent<AICarControl>().enabled = false;
+        childObject.GetComponent<AICarBehaviour>().enabled = false;
 
         saveLoadManager.playerData.coin = PlayerPrefs.GetInt("currency");
-        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("cPointer");
+        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("csPointer");
         SaveOwnedCarData();
         saveLoadManager.SaveData();
     }
@@ -241,14 +291,44 @@ public class UIMenuManager : MonoBehaviour
 
         if(carPointer == 0)
         {
-            leftButton.SetActive(false);
+            shopLeftButton.SetActive(false);
         }
         if(carPointer == listOfCars.Cars.Length - 1)
         {
-            rightButton.SetActive(false);
+            shopRightButton.SetActive(false);
         }
 
         GetCarInfo();
+    }
+    public void InventoryButtonClicked()
+    {
+        mainCanvas.SetActive(false);
+        playMenu.SetActive(false);
+        shopCanvas.SetActive(false);
+        exitMenu.SetActive(false);
+        invCanvas.SetActive(true);
+        finalToStart = true;
+        startToFinal = false;
+
+        invCurrency.text = saveLoadManager.playerData.coin.ToString();
+
+        carSetPointer = PlayerPrefs.GetInt("csPointer",0);
+
+        carPointer = 0;
+        PlayerPrefs.SetInt("carPointer",carPointer);
+
+        invLeftButton.SetActive(false);
+
+        lockImage.gameObject.SetActive(true);
+        unlockImage.gameObject.SetActive(false);
+
+        Destroy(GameObject.FindGameObjectWithTag("AI"));
+        GameObject childObject = Instantiate(listCarSets[carSetPointer].Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
+        childObject.transform.parent = rotateTurnTable.transform;
+
+        childObject.GetComponent<AICarControl>().enabled = false;
+        childObject.GetComponent<AICarBehaviour>().enabled = false;
+        InvCarInfo();
     }
     public void SettingButtonClicked()
     {
@@ -295,82 +375,74 @@ public class UIMenuManager : MonoBehaviour
     public void NewGameButtonClicked()
     {
         saveLoadManager.playerData.coin = PlayerPrefs.GetInt("currency");
-        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("cPointer");
         SaveOwnedCarData();
         SceneManager.LoadScene("MapSelectScene");
     }
-
+    public void MiniGameButtonClicked()
+    {
+        saveLoadManager.playerData.coin = PlayerPrefs.GetInt("currency");
+        SaveOwnedCarData();
+        SceneManager.LoadScene("FortuneWheel");
+    }
     //Shop canvas
-    public void RightButtonClicked()
+    public void ShopRightButtonClicked()
     {
         if(carPointer < listOfCars.Cars.Length - 1)
         {
-            leftButton.SetActive(true);
+            shopLeftButton.SetActive(true);
             if(carPointer < listOfCars.Cars.Length - 2)
             {
-                rightButton.SetActive(true);
+                shopRightButton.SetActive(true);
             }
             else
             {
-                rightButton.SetActive(false);
+                shopRightButton.SetActive(false);
             }
-            Destroy(GameObject.FindGameObjectWithTag("Player"));
+            Destroy(GameObject.FindGameObjectWithTag("AI"));
             carPointer++;
             PlayerPrefs.SetInt("carPointer",carPointer);
             GameObject childObject = Instantiate(listOfCars.Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
             childObject.transform.parent = rotateTurnTable.transform;
-            childObject.GetComponent<CarController>().enabled = false;
-            if(childObject.GetComponent<CarController>().carEngineSound != null)
-            {
-                childObject.GetComponent<CarController>().carEngineSound.Stop();
-            }
-            if(childObject.GetComponent<CarController>().tireScreechSound != null)
-            {
-                childObject.GetComponent<CarController>().tireScreechSound.Stop();
-            }
+
+            childObject.GetComponent<AICarControl>().enabled = false;
+            childObject.GetComponent<AICarBehaviour>().enabled = false;
             GetCarInfo();
         }
     }
-
-    public void LeftButtonClicked()
+    public void ShopLeftButtonClicked()
     {
         if(carPointer > 0)
         {
-            rightButton.SetActive(true);
+            shopRightButton.SetActive(true);
             if(carPointer > 1)
             {
-                leftButton.SetActive(true);
+                shopLeftButton.SetActive(true);
             }
             else 
             {
-                leftButton.SetActive(false);
+                shopLeftButton.SetActive(false);
             }
-            Destroy(GameObject.FindGameObjectWithTag("Player"));
+            Destroy(GameObject.FindGameObjectWithTag("AI"));
             carPointer--;
             PlayerPrefs.SetInt("carPointer",carPointer);
+
             GameObject childObject = Instantiate(listOfCars.Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
             childObject.transform.parent = rotateTurnTable.transform;
-            childObject.GetComponent<CarController>().enabled = false;
-            if(childObject.GetComponent<CarController>().carEngineSound != null)
-            {
-                childObject.GetComponent<CarController>().carEngineSound.Stop();
-            }
-            if(childObject.GetComponent<CarController>().tireScreechSound != null)
-            {
-                childObject.GetComponent<CarController>().tireScreechSound.Stop();
-            }
+
+            childObject.GetComponent<AICarControl>().enabled = false;
+            childObject.GetComponent<AICarBehaviour>().enabled = false;
             GetCarInfo();
         }
     }
     public void BuyButtonClicked()
     {
         int carIndex = PlayerPrefs.GetInt("carPointer");
-        CarController CC = listOfCars.Cars[carIndex].GetComponent<CarController>();
+        AIController ac = listOfCars.Cars[carIndex].GetComponent<AIController>();
         int currentCoin = PlayerPrefs.GetInt("currency");
 
-        if(currentCoin >= CC.carPrice)
+        if(currentCoin >= ac.carPrice)
         {
-            currentCoin -= CC.carPrice;
+            currentCoin -= ac.carPrice;
 
             PlayerPrefs.SetInt("currency", currentCoin);
 
@@ -386,49 +458,22 @@ public class UIMenuManager : MonoBehaviour
             Invoke("CloseNotifMessage",1.5f);
         }
     }
-
     public void GetCarInfo()
     {
         int carIndex = PlayerPrefs.GetInt("carPointer");
-        CarController CC = listOfCars.Cars[carIndex].GetComponent<CarController>();
+        AIController ac = listOfCars.Cars[carIndex].GetComponent<AIController>();
 
         shopCurrency.text = PlayerPrefs.GetInt("currency").ToString();
 
         if (PlayerPrefs.GetInt("Car_" + carIndex) == 1)
         {
-            carInfo.text = "Owned";
+            carShopInfo.text = ac.carName;
             buyButton.SetActive(false);
-
-            int chooseIndex = PlayerPrefs.GetInt("cPointer");
-            lockButton.SetActive(true);
-            if(chooseIndex == carIndex)
-            {
-                lockImage.gameObject.SetActive(true);
-                unlockImage.gameObject.SetActive(false);
-            }
-            else 
-            {
-                lockImage.gameObject.SetActive(false);
-                unlockImage.gameObject.SetActive(true);
-            }
-            
         }
         else
         {
-            carInfo.text = CC.carName + " " + CC.carPrice;
+            carShopInfo.text = ac.carName + " " + ac.carPrice;
             buyButton.SetActive(true);
-            lockButton.SetActive(false);
-        }
-    }
-
-    public void LockButtonClicked()
-    {
-        bool isUnlockActive = unlockImage.gameObject.activeSelf;
-        if(isUnlockActive)
-        {
-            unlockImage.gameObject.SetActive(false);
-            lockImage.gameObject.SetActive(true);
-            PlayerPrefs.SetInt("cPointer" , carPointer);
         }
     }
 
@@ -441,19 +486,212 @@ public class UIMenuManager : MonoBehaviour
         startToFinal = true;
         finalToStart = false;
 
-        int chooseIndex = PlayerPrefs.GetInt("cPointer");
+        saveLoadManager.playerData.coin = PlayerPrefs.GetInt("currency");
+        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("csPointer");
+        SaveOwnedCarData();
 
-        if(carPointer != chooseIndex)
+        mainCurrency.text = saveLoadManager.playerData.coin.ToString();
+        saveLoadManager.SaveData();
+    }
+
+    //Inventory canvas
+    public void InvRightButtonClicked()
+    {
+        carSetPointer = PlayerPrefs.GetInt("csPointer",0);
+        carPointer = PlayerPrefs.GetInt("carPointer",0);
+        if(carPointer < listCarSets[carSetPointer].Cars.Length - 1)
         {
-            carPointer = chooseIndex;
-            Destroy(GameObject.FindGameObjectWithTag("Player"));
+            invLeftButton.SetActive(true);
+            if(carPointer < listCarSets[carSetPointer].Cars.Length - 2)
+            {
+                invRightButton.SetActive(true);
+            }
+            else
+            {
+                invRightButton.SetActive(false);
+            }
+            Destroy(GameObject.FindGameObjectWithTag("AI"));
+            carPointer++;
             PlayerPrefs.SetInt("carPointer",carPointer);
-            GameObject childObject = Instantiate(listOfCars.Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
+            GameObject childObject = Instantiate(listCarSets[carSetPointer].Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
             childObject.transform.parent = rotateTurnTable.transform;
+
+            childObject.GetComponent<AICarControl>().enabled = false;
+            childObject.GetComponent<AICarBehaviour>().enabled = false;
+            InvCarInfo();
         }
+    }
+
+    public void InvLeftButtonClicked()
+    {
+        carSetPointer = PlayerPrefs.GetInt("csPointer",0);
+        carPointer = PlayerPrefs.GetInt("carPointer",0);
+        if(carPointer > 0)
+        {
+            invRightButton.SetActive(true);
+            if(carPointer > 1)
+            {
+                invLeftButton.SetActive(true);
+            }
+            else 
+            {
+                invLeftButton.SetActive(false);
+            }
+            Destroy(GameObject.FindGameObjectWithTag("AI"));
+            carPointer--;
+            PlayerPrefs.SetInt("carPointer",carPointer);
+            GameObject childObject = Instantiate(listCarSets[carSetPointer].Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
+            childObject.transform.parent = rotateTurnTable.transform;
+
+            childObject.GetComponent<AICarControl>().enabled = false;
+            childObject.GetComponent<AICarBehaviour>().enabled = false;
+            InvCarInfo();
+        }
+    }
+
+    public void InvCarInfo()
+    {
+        carSetPointer = PlayerPrefs.GetInt("csPointer",0);
+        int carIndex = PlayerPrefs.GetInt("carPointer",0);
+        GameObject car = listCarSets[carSetPointer].Cars[carIndex];
+        AIController ac = car.GetComponent<AIController>();
+        invCurrency.text = PlayerPrefs.GetInt("currency").ToString();
+
+        string carIndexString = "";
+        if (car.name.Length == 6)//one-digit number AI car has 6 characters (for example: AICar2)
+        {
+                carIndexString = car.name.Substring(car.name.Length - 1);
+        }
+        Debug.Log("carIndex" + carIndexString);
+        if (PlayerPrefs.GetInt("Car_" + carIndexString) == 1)
+        {
+            carInvInfo.text = ac.carName + "    (Owned)";
+        }
+        else
+        {
+            carInvInfo.text = ac.carName + "    " + ac.carPrice;
+        }
+    }
+
+    public void InvCarSet1ButtonClicked()
+    {
+        invLeftButton.SetActive(false);
+        invRightButton.SetActive(true);
+        carSetPointer = 0;
+        PlayerPrefs.SetInt("csPointer",carSetPointer);
+        carPointer = 0;
+        PlayerPrefs.SetInt("carPointer",carPointer);
+        int chooseIndex = PlayerPrefs.GetInt("chPointer");
+        lockButton.SetActive(true);
+        if(chooseIndex == carSetPointer)
+        {
+            lockImage.gameObject.SetActive(true);
+            unlockImage.gameObject.SetActive(false);
+        }
+        else 
+        {
+            lockImage.gameObject.SetActive(false);
+            unlockImage.gameObject.SetActive(true);
+        }
+        Destroy(GameObject.FindGameObjectWithTag("AI"));
+        GameObject childObject = Instantiate(listCarSets[carSetPointer].Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
+        childObject.transform.parent = rotateTurnTable.transform;
+
+        childObject.GetComponent<AICarControl>().enabled = false;
+        childObject.GetComponent<AICarBehaviour>().enabled = false;
+        InvCarInfo();
+    }
+    public void InvCarSet2ButtonClicked()
+    {
+        invLeftButton.SetActive(false);
+        invRightButton.SetActive(true);
+        carSetPointer = 1;
+        PlayerPrefs.SetInt("csPointer",carSetPointer);
+        carPointer = 0;
+        PlayerPrefs.SetInt("carPointer",carPointer);
+        int chooseIndex = PlayerPrefs.GetInt("chPointer");
+        lockButton.SetActive(true);
+        if(chooseIndex == carSetPointer)
+        {
+            lockImage.gameObject.SetActive(true);
+            unlockImage.gameObject.SetActive(false);
+        }
+        else 
+        {
+            lockImage.gameObject.SetActive(false);
+            unlockImage.gameObject.SetActive(true);
+        }
+        Destroy(GameObject.FindGameObjectWithTag("AI"));
+        GameObject childObject = Instantiate(listCarSets[carSetPointer].Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
+        childObject.transform.parent = rotateTurnTable.transform;
+
+        childObject.GetComponent<AICarControl>().enabled = false;
+        childObject.GetComponent<AICarBehaviour>().enabled = false;
+        InvCarInfo();
+    }
+    public void InvCarSet3ButtonClicked()
+    {
+        invLeftButton.SetActive(false);
+        invRightButton.SetActive(true);
+        carSetPointer = 2;
+        PlayerPrefs.SetInt("csPointer",carSetPointer);
+        carPointer = 0;
+        PlayerPrefs.SetInt("carPointer",carPointer);
+        int chooseIndex = PlayerPrefs.GetInt("chPointer");
+        lockButton.SetActive(true);
+        if(chooseIndex == carSetPointer)
+        {
+            lockImage.gameObject.SetActive(true);
+            unlockImage.gameObject.SetActive(false);
+        }
+        else 
+        {
+            lockImage.gameObject.SetActive(false);
+            unlockImage.gameObject.SetActive(true);
+        }
+        Destroy(GameObject.FindGameObjectWithTag("AI"));
+        GameObject childObject = Instantiate(listCarSets[carSetPointer].Cars[carPointer],Vector3.zero,rotateTurnTable.transform.rotation) as GameObject;
+        childObject.transform.parent = rotateTurnTable.transform;
+
+        childObject.GetComponent<AICarControl>().enabled = false;
+        childObject.GetComponent<AICarBehaviour>().enabled = false;
+        InvCarInfo();
+    }
+    public void LockButtonClicked()
+    {
+        bool isUnlockActive = unlockImage.gameObject.activeSelf;
+        int carSet = PlayerPrefs.GetInt("csPointer");
+        bool isHasAllCar = CheckIfHaveAllCar(carSet);
+        if(isHasAllCar)
+        {
+            if(isUnlockActive)
+            {
+                unlockImage.gameObject.SetActive(false);
+                lockImage.gameObject.SetActive(true);
+                PlayerPrefs.SetInt("chPointer" , carSetPointer);
+                Debug.Log("chCarset:" + PlayerPrefs.GetInt("chPointer"));
+            }
+        }
+        else
+        {
+            Debug.Log("You don't have all cars");
+            ShowNotifMessage("You don't have all cars in this Set!");
+            Invoke("CloseNotifMessage",1.5f);
+        }
+    }
+    public void InvReturnButtonClicked()
+    {
+        invCanvas.SetActive(false);
+        mainCanvas.SetActive(true);
+        mainMenu.SetActive(true);
+
+        startToFinal = true;
+        finalToStart = false;
+        chCarSet = PlayerPrefs.GetInt("chPointer");
+        PlayerPrefs.SetInt("csPointer",chCarSet);
 
         saveLoadManager.playerData.coin = PlayerPrefs.GetInt("currency");
-        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("cPointer");
+        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("csPointer");
         SaveOwnedCarData();
 
         mainCurrency.text = saveLoadManager.playerData.coin.ToString();
@@ -503,7 +741,7 @@ public class UIMenuManager : MonoBehaviour
     public void QuitGame()
     {
         saveLoadManager.playerData.coin = PlayerPrefs.GetInt("currency");
-        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("cPointer");
+        saveLoadManager.playerData.lastChoose = PlayerPrefs.GetInt("csPointer");
         SaveOwnedCarData();
         saveLoadManager.SaveData();
 		#if UNITY_EDITOR
@@ -539,34 +777,25 @@ public class UIMenuManager : MonoBehaviour
         notifText.text = "";
         notifCanvas.SetActive(false);
     }
-    // IEnumerator LoadAsynchronously(string sceneName)
-    // { // scene name is just the name of the current scene being loaded
-	// 	AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-	// 	operation.allowSceneActivation = false;
-	// 	mainCanvas.SetActive(false);
-	// 	loadingMenu.SetActive(true);
-
-	// 	while (!operation.isDone)
-    //     {
-	// 		float progress = Mathf.Clamp01(operation.progress / .95f);
-	// 		loadingBar.value = progress;
-
-	// 		if (operation.progress >= 0.9f && waitForInput)
-    //         {
-	// 			loadPromptText.text = "Press " + userPromptKey.ToString().ToUpper() + " to continue";
-	// 			loadingBar.value = 1;
-
-	// 			if (Input.GetKeyDown(userPromptKey))
-    //             {
-	// 				operation.allowSceneActivation = true;
-	// 			}
-    //         }
-    //         else if(operation.progress >= 0.9f && !waitForInput)
-    //         {
-	// 			operation.allowSceneActivation = true;
-	// 		}
-
-	// 		yield return null;
-	// 	}
-	// }
+    public bool CheckIfHaveAllCar(int carSet)
+    {
+        bool hasCar = true;
+        for(int i = 0; i < listCarSets[carSetPointer].Cars.Length; i++)
+        {
+            GameObject car = listCarSets[carSetPointer].Cars[i];
+            AIController ac = car.GetComponent<AIController>();
+            string carIndexString = "";
+            if (car.name.Length == 6)//one-digit number AI car has 6 characters (for example: AICar2)
+            {
+                carIndexString = car.name.Substring(car.name.Length - 1);
+            }
+            Debug.Log("carIndex" + carIndexString);
+            if (PlayerPrefs.GetInt("Car_" + carIndexString) != 1)
+            {
+                hasCar = false;
+                break;
+            }
+        }
+        return hasCar;
+    }
 }

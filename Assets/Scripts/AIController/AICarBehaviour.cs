@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.Vehicles.Car;
+using System.Security.Cryptography;
 //This script detects the AI car speed to see if the car it’s stuck so it will start going reverse for 1 second to get back on track
 //Also, it uses a Box collider with IsTrigger option checked to see if an AI Car or the player car are in front of this car and it will brake
 public class AICarBehaviour : MonoBehaviour
@@ -73,18 +74,37 @@ public class AICarBehaviour : MonoBehaviour
     //check if there's a player or AI car inside the box collider and brake
     void OnTriggerEnter(Collider col)
     {
-        if (col.tag == "Player" || col.tag == "AICarCollider")
+        if (col.tag == "AICarCollider")
         {
-            AIController.m_Topspeed = 15;//brakes are actually reducing the topspeed of the car
+            if(col.gameObject.GetComponentInParent<AIController>().isSlow == true)
+            {
+                Vector3 newPosition = col.transform.position + col.transform.forward * 5f;
+                transform.position = newPosition;
+            }
+            else
+            {
+                AIController.m_Topspeed = 15;//brakes are actually reducing the topspeed of the car
+            }
+        }
+        if(col.tag == "Slow")
+        {
+            AIController.isSlow = true;
+            AIController.m_Topspeed = 15;
+            Invoke("ResetSpeed", 5f);
         }
     }
     //if the AI/player car exits the box collider:
     void OnTriggerExit(Collider col)
     {
-        if (col.tag == "Player" || col.tag == "AICarCollider")
+        if (col.tag == "AICarCollider")
         {
             AIController.m_Topspeed = NormalTopspeed;//bring back the normal topspeed
         }
+    }
+    void ResetSpeed()
+    {
+        AIController.isSlow = false;
+        AIController.m_Topspeed = NormalTopspeed;
     }
 }
 

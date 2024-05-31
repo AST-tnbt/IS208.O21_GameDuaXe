@@ -18,7 +18,11 @@ namespace UnityStandardAssets.Vehicles.Car
 
     public class AIController : MonoBehaviour
     {
+        public string carName;
+        public int carPrice;
+        public int currentRound = 0;
         public bool hasFinished = false;
+        public bool isSlow = false;
         [SerializeField] private CarDriveType m_CarDriveType = CarDriveType.FourWheelDrive;
         [SerializeField] private WheelCollider[] m_WheelColliders = new WheelCollider[4];
         [SerializeField] private GameObject[] m_WheelMeshes = new GameObject[4];

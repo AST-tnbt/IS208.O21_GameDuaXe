@@ -49,6 +49,11 @@ namespace UnityStandardAssets.Vehicles.Car
 
         private void Awake()
         {
+            if (gameObject.name.Contains("(Clone)"))
+            {
+                // Loại bỏ chuỗi "(Clone)" từ tên
+                gameObject.name = gameObject.name.Replace("(Clone)", "");
+            }
             // get the car controller reference
             m_AIController = GetComponent<AIController>();
 

@@ -10,7 +10,11 @@ TagManager:
   - Map
   - AI
   - Collider
-  - AICar1
+  - UndoMovePowerupCount
+  - AICarCollider
+  - VirtualCamera
+  - Slow
+  - choose
   layers:
   - Default
   - TransparentFX

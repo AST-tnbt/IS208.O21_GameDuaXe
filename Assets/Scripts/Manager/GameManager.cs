@@ -7,40 +7,46 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityStandardAssets.Vehicles.Car;
+using Cinemachine;
 
 public class GameManager : MonoBehaviour
 {
 
-    public ListCar listCar;
-    public CarController cc;
-    public AICarBehaviour acb;
-    public AICarControl acc;
-    public AIController ac;
-    public GameObject needle;
-    public GameObject startPosition;
-    public TextMeshProUGUI kph;
-    public Slider nitrusSlider;
-    public GameObject finishSprite;
+    public ListCar listCar1;
+    public ListCar listCar2;
+    public ListCar listCar3;
+    public GameObject[] aiCars;
+    private AICarControl[] aiCarControlScripts;
+    private AICarBehaviour[] aiCarBehaviourScripts;
+    private AIController[] aiControllersScripts;
+    private int currentIndex = 0;
+    public GameObject startPosition1;
+    public GameObject startPosition2;
+    public GameObject startPosition3;
+    public GameObject startPosition4;
+    public GameObject startPosition5;
     public GameObject cDPanel;
     public TextMeshProUGUI cooldownText;
     public GameObject notifCanvas;
     public GameObject pauseMenuUI;
-    public TextMeshProUGUI timeLapText;
+    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI carNameText;
+    public GameObject timeLapCanvas;
     public GameObject finishCanvas;
-    public TextMeshProUGUI finishTime;
-    public TextMeshProUGUI finishPlace;
-    public int slotOrder = 0;
-    private bool isFinish = false;
+    public TextMeshProUGUI top1;
+    public TextMeshProUGUI top2;
+    public TextMeshProUGUI top3;
+    public bool isFinish = false;
     private bool isPaused = false;
     private bool isStart = false;
-    private float timeLap = 0f;
-    private float startPos = 32f, endPos = -211f;
-    private float desiredPosition;
+    public float timeLap = 0f;
     private int round = 0;
+    private int listCar = 0;
     private RaceFinish raceFinish;
     private float cooldownTime = 3f;
-
-    private int isHard = 0;
+    private CinemachineVirtualCamera CVC; 
+    private GameObject CameraLookAt, CameraFollow;
+    private bool finishCheck = false;
 
     [Header("SFX")]
     [Tooltip("The GameObject holding the Audio Source component for the HOVER SOUND")]
@@ -50,58 +56,68 @@ public class GameManager : MonoBehaviour
     {   
         isFinish = false;
         cDPanel.SetActive(true);
+        timeLapCanvas.SetActive(false);
         finishCanvas.SetActive(false);
         notifCanvas.SetActive(false);
-        //Tạo một đối tượng mới trong trò chơi từ danh sách vehicles trong biến list. PlayerPrefs.GetInt("pointer")
-        Instantiate (listCar.Cars[PlayerPrefs.GetInt("cPointer")], startPosition.transform.position, startPosition.transform.rotation);
+        pauseMenuUI.SetActive(false);
+        listCar = 1;
+        if(listCar == 1)
+        {
+            Instantiate(listCar1.Cars[0], startPosition1.transform.position, startPosition1.transform.rotation);
+            Instantiate(listCar1.Cars[1], startPosition2.transform.position, startPosition2.transform.rotation);
+            Instantiate(listCar1.Cars[2], startPosition3.transform.position, startPosition3.transform.rotation);
+            Instantiate(listCar1.Cars[3], startPosition4.transform.position, startPosition4.transform.rotation);
+            Instantiate(listCar1.Cars[4], startPosition5.transform.position, startPosition5.transform.rotation);   
+        }
+        else if(listCar == 2)
+        {
+            Instantiate(listCar2.Cars[0], startPosition1.transform.position, startPosition1.transform.rotation);
+            Instantiate(listCar2.Cars[1], startPosition2.transform.position, startPosition2.transform.rotation);
+            Instantiate(listCar2.Cars[2], startPosition3.transform.position, startPosition3.transform.rotation);
+            Instantiate(listCar2.Cars[3], startPosition4.transform.position, startPosition4.transform.rotation);
+            Instantiate(listCar2.Cars[4], startPosition5.transform.position, startPosition5.transform.rotation);
+        }
+        else if(listCar == 3)
+        {
+            Instantiate(listCar3.Cars[0], startPosition1.transform.position, startPosition1.transform.rotation);
+            Instantiate(listCar3.Cars[1], startPosition2.transform.position, startPosition2.transform.rotation);
+            Instantiate(listCar3.Cars[2], startPosition3.transform.position, startPosition3.transform.rotation);
+            Instantiate(listCar3.Cars[3], startPosition4.transform.position, startPosition4.transform.rotation);
+            Instantiate(listCar3.Cars[4], startPosition5.transform.position, startPosition5.transform.rotation);
+        }
 
-        //Tìm đối tượng có tag là "Player" trong cảnh và gán vào biến CC. Sau đó, từ đối tượng này, thành phần controller được trích xuất và gán vào biến CC.
-        cc = GameObject.FindGameObjectWithTag ("Player").GetComponent<CarController>();
-        cc.useSounds = true;
-        cc.hasFinished = false;
+        aiCars = GameObject.FindGameObjectsWithTag("AI");
+        aiCarControlScripts = FindObjectsOfType(typeof(AICarControl)) as AICarControl[];
+        aiCarBehaviourScripts = FindObjectsOfType(typeof(AICarBehaviour)) as AICarBehaviour[];
+        aiControllersScripts = FindObjectsOfType(typeof(AIController)) as AIController[];
+        System.Random random = new System.Random();
+        foreach (AIController ac in aiControllersScripts)
+        {
+            ac.hasFinished = false;
+            int randomFullTorque = random.Next(400, 2001);
+            int randomMaxSpeed = random.Next(50,201);
+            ac.m_FullTorqueOverAllWheels = randomFullTorque;
+            ac.m_Topspeed = randomMaxSpeed;
+        }
 
-        acb = GameObject.FindGameObjectWithTag ("AI").GetComponent<AICarBehaviour>();
-        acc = GameObject.FindGameObjectWithTag ("AI").GetComponent<AICarControl>();
-        ac = GameObject.FindGameObjectWithTag ("AI").GetComponent<AIController>();
-        ac.hasFinished = false;
+        currentIndex = 0;
+        CVC = GameObject.FindGameObjectWithTag("VirtualCamera").GetComponent<CinemachineVirtualCamera>();
+        CameraLookAt = aiCars[currentIndex].transform.Find ("Camera lookat").gameObject;
+        CameraFollow = aiCars[currentIndex].transform.Find ("Camera constraint").gameObject;
+        CVC.LookAt = CameraLookAt.transform;
+        CVC.Follow = CameraFollow.transform;
+        carNameText.text = aiCars[currentIndex].GetComponent<AIController>().carName;
 
         raceFinish = GameObject.FindGameObjectWithTag ("Finish").GetComponent<RaceFinish>();
         round = PlayerPrefs.GetInt("Round", 0);
-        isHard = PlayerPrefs.GetInt("IsHard", 0);
-        if(isHard == 0)
-        {
-            ac.m_FullTorqueOverAllWheels = 250;
-            ac.m_Topspeed = 50;
-        }
-        else if(isHard == 1)
-        {
-            ac.m_FullTorqueOverAllWheels = 2250;
-            ac.m_Topspeed = 200;
-        }
-        finishSprite.SetActive(false);
     }
-
     private void Update () 
     {
-        UpdateTimeLap();
-        UpdateFinishSprite();
-        RaceOrder();
-        if(cc.carSpeed >= 0)
-        {
-            kph.text = cc.carSpeed.ToString ("0");
-        }
-        else
-        {
-            kph.text = (-cc.carSpeed).ToString("0");
-        }
-        UpdateNeedle();
-        NitrusUI();
+        //Start Game
         if(cooldownTime > 0)
         {
             Cooldown();
-            cc.enabled = false;
-            acb.enabled = false;
-            acc.enabled = false;
+            AICarControlOff();
         }
         else
         {
@@ -111,7 +127,7 @@ public class GameManager : MonoBehaviour
                 Invoke("StartGame",0.5f);
             }
         }
-
+        //Pause Game
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (!isPaused)
@@ -123,28 +139,69 @@ public class GameManager : MonoBehaviour
                 ResumeGame();
             }
         }
-        if(raceFinish.roundCurrent == round && !isFinish)
+        //Change Camera 
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            isFinish = true;
+            currentIndex--;
+            if(currentIndex < 0) currentIndex = aiCars.Length - 1;
+            CameraLookAt = aiCars[currentIndex].transform.Find ("Camera lookat").gameObject;
+            CameraFollow = aiCars[currentIndex].transform.Find ("Camera constraint").gameObject;
+            CVC.LookAt = CameraLookAt.transform;
+            CVC.Follow = CameraFollow.transform;
+            carNameText.text = aiCars[currentIndex].GetComponent<AIController>().carName;
+        }
+        if(Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            currentIndex++;
+            if(currentIndex >= aiCars.Length) currentIndex = 0;
+            CameraLookAt = aiCars[currentIndex].transform.Find ("Camera lookat").gameObject;
+            CameraFollow = aiCars[currentIndex].transform.Find ("Camera constraint").gameObject;
+            CVC.LookAt = CameraLookAt.transform;
+            CVC.Follow = CameraFollow.transform;
+            carNameText.text = aiCars[currentIndex].GetComponent<AIController>().carName;
+        }
+
+        if(isFinish == true && finishCheck == false)
+        {
+            finishCheck = true;
+            timeLapCanvas.SetActive(false);
             finishCanvas.SetActive(true);
-            TimeSpan timeSpan = TimeSpan.FromSeconds(timeLap);
-            string formattedTime = string.Format("{0:D2}:{1:D2}:{2:D2}.{3}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds);
-            finishTime.text = formattedTime;
-            if(slotOrder == 1)
-            {
-                finishPlace.text = "1st";
-            }
-            else if(slotOrder == 2)
-            {
-                finishPlace.text = "2nd";
-            }
-            PlayerPrefs.SetInt("SlotOrder", slotOrder);
-            Debug.Log(PlayerPrefs.GetInt("SlotOrder"));
-            Debug.Log(PlayerPrefs.GetInt("Betcoin"));
+            GameObject carTop1 = raceFinish.resultsCar[0].transform.parent.gameObject;
+            GameObject carTop2 = raceFinish.resultsCar[1].transform.parent.gameObject;
+            GameObject carTop3 = raceFinish.resultsCar[2].transform.parent.gameObject;
+            top1.text = "Top 1: " + carTop1.GetComponent<AIController>().carName;
+            top2.text = "Top 2: " + carTop2.GetComponent<AIController>().carName;
+            top3.text = "Top 3: " + carTop3.GetComponent<AIController>().carName;
+            PlayerPrefs.SetString("CarTop1Res", top1.text);
+            PlayerPrefs.SetString("CarTop2Res", top2.text);
+            PlayerPrefs.SetString("CarTop3Res", top3.text);
             Invoke("ReturnMainScene",5f);
         }
+        UpdateTimeLap();
     }
-
+    public void AICarControlOn()
+    {
+        foreach (AICarControl acc in aiCarControlScripts)
+        {
+            acc.enabled = true;
+        }
+        foreach (AICarBehaviour acb in aiCarBehaviourScripts)
+        {
+            acb.enabled = true;
+        }
+    }
+    public void AICarControlOff()
+    {
+        foreach (AICarControl acc in aiCarControlScripts)
+        {
+            acc.enabled = false;
+        }
+        foreach (AICarBehaviour acb in aiCarBehaviourScripts)
+        {
+            acb.enabled = false;
+        }
+    }
+    
     private void UpdateTimeLap()
     {
         if(isStart)
@@ -154,55 +211,18 @@ public class GameManager : MonoBehaviour
                 timeLap += Time.deltaTime;
                 TimeSpan timeSpan = TimeSpan.FromSeconds(timeLap);
                 string formattedTime = string.Format("{0:D2}:{1:D2}:{2:D2}.{3}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds);
-                timeLapText.text = formattedTime;
+                timeText.text = formattedTime;
             }
         }
         
     }
-    public void RaceOrder()
-    {
-        if(cc.hasFinished == true && ac.hasFinished == false)
-        {
-            slotOrder = 1;
-        }
-        else if(cc.hasFinished == false && ac.hasFinished == true)
-        {
-            slotOrder = 2;
-        }
-    }
+
     public void StartGame () 
     {
-        cc.enabled = true;
-        acb.enabled = true;
-        acc.enabled = true;
         cDPanel.SetActive(false);
+        timeLapCanvas.SetActive(true);
         isStart = true;
-    }
-    public void UpdateNeedle () 
-    {
-        desiredPosition = startPos - endPos;
-        float temp = cc.carSpeed / 200;
-        float Pos = Mathf.Abs(temp * desiredPosition);
-    
-        needle.transform.eulerAngles = new Vector3 (0, 0, (startPos - Pos));
-    }
-    public void UpdateFinishSprite()
-    {
-        if(round == 1)
-        {
-            finishSprite.SetActive(true);
-        }
-        else
-        {
-            if(raceFinish.roundCurrent == round - 1)
-            {
-                finishSprite.SetActive(true);
-            }
-        }
-    }
-    public void NitrusUI () 
-    {
-        nitrusSlider.value = cc.nitrusValue/10;
+        AICarControlOn();
     }
 
     public void Cooldown()
@@ -218,14 +238,6 @@ public class GameManager : MonoBehaviour
         pauseMenuUI.SetActive(true);
         isPaused = true;
         isStart = false;
-        if(cc.carEngineSound != null)
-        {
-            cc.carEngineSound.Stop();
-        }
-        if(cc.tireScreechSound != null)
-        {
-            cc.tireScreechSound.Stop();
-        }
     }
     public void ResumeGame()
     {
@@ -233,19 +245,9 @@ public class GameManager : MonoBehaviour
         pauseMenuUI.SetActive(false);
         isPaused = false;
         isStart = true;
-        if(cc.carEngineSound != null)
-        {
-            cc.carEngineSound.Play();
-        }
-        if(cc.tireScreechSound != null)
-        {
-            cc.tireScreechSound.Play();
-        }
     }
     public void ReturnBut()
     {
-        slotOrder = 2;
-        PlayerPrefs.SetInt("SlotOrder", slotOrder);
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainScene");
     }

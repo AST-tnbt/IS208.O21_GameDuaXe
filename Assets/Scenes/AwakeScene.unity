@@ -4193,7 +4193,7 @@ MonoBehaviour:
   playerData:
     coin: 5000
     lastChoose: 0
-    OwnedCar: 010000000000000000000000000000000000000000000000000000000000000000000000
+    OwnedCar: 010000000100000001000000010000000100000000000000000000000000000000000000
 --- !u!82 &1026075979
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8622,8 +8622,8 @@ CanvasRenderer:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 963502897}
   - {fileID: 844346577}
+  - {fileID: 963502897}
   - {fileID: 1345456429}
   - {fileID: 1563798149}
   - {fileID: 1026075977}
