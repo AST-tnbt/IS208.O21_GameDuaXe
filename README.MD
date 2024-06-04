@@ -20,7 +20,6 @@ Phát triển hệ thống chức năng chính:
 - Tiến hành kiểm thử chi tiết để phát hiện và sửa lỗi, đảm bảo game hoạt động ổn định và không gặp các vấn đề nghiêm trọng.
 - Đảm bảo game có đồ họa đẹp mắt và âm thanh sống động, tạo ra trải nghiệm người chơi tốt nhất có thể.
 ## Công nghệ sử dụng
-- NoSQL
 - Playfab
 - Unity
 - C#
