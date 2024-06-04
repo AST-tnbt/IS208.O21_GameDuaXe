@@ -24,7 +24,8 @@ Phát triển hệ thống chức năng chính:
 - Unity
 - C#
 ## Cài đặt
-
+- Bước 1: Tải folder TWPRacingv1.0 [tại đây](https://drive.google.com/drive/folders/1U3kaUXJOt2ORYhPANIj7Ub3bMA8c5A-m?fbclid=IwZXh0bgNhZW0CMTAAAR1mjkURYN0GjGpfRdpUfT5P_wLi81VK0IKOYfR_vRwfIk_XVStH3dBlCEA_aem_AaOZ1RUCBAvBXgyFsO1JdpjppGu4TCBQV1lCfgsBBVQmefBTyPuf0Lfn0cNPUtUPtYRcWkXqwW4sMe4a1X6E9kjj)
+- Bước 2: Mở folder và chạy file TWPRacing.exe
 ## Giao diện
 ### Giao diện đăng nhập
 ![alt text](/README/img/login.png)
